@@ -5,7 +5,10 @@
         "fields": {
             "name": "Monopoly",
             "gamer": 1,
-            "game_type": 1
+            "game_type": 1,
+            "maker": "Steve Harvey",
+            "number_of_players": 6,
+            "skill_level": 4
         }
     },
     {
@@ -14,7 +17,10 @@
         "fields": {
             "name": "Dungeons & Dragons",
             "gamer": 1,
-            "game_type": 2
+            "game_type": 2,
+            "maker": "Steve Harvey",
+            "number_of_players": 8,
+            "skill_level": 4
         }
     },
     {
@@ -23,7 +29,10 @@
         "fields": {
             "name": "World of Warcraft",
             "gamer": 1,
-            "game_type": 3
+            "game_type": 3,
+            "maker": "Steve Harvey",
+            "number_of_players": 30,
+            "skill_level": 4
         }
     },
     {
@@ -32,7 +41,10 @@
         "fields": {
             "name": "Scrabble",
             "gamer": 1,
-            "game_type": 1
+            "game_type": 1,
+            "maker": "Steve Harvey",
+            "number_of_players": 4,
+            "skill_level": 4
         }
     },
     {
@@ -41,7 +53,10 @@
         "fields": {
             "name": "Pathfinder",
             "gamer": 1,
-            "game_type": 2
+            "game_type": 2,
+            "maker": "Steve Harvey",
+            "number_of_players": 3,
+            "skill_level": 4
         }
     },
     {
@@ -50,7 +65,10 @@
         "fields": {
             "name": "EVE Online",
             "gamer": 1,
-            "game_type": 3
+            "game_type": 3,
+            "maker": "Steve Harvey",
+            "number_of_players": 300,
+            "skill_level": 4
         }
     },
     {
@@ -59,7 +77,10 @@
         "fields": {
             "name": "Chess",
             "gamer": 1,
-            "game_type": 1
+            "game_type": 1,
+            "maker": "Steve Harvey",
+            "number_of_players": 2,
+            "skill_level": 4
         }
     },
     {
@@ -68,7 +89,10 @@
         "fields": {
             "name": "Numenera",
             "gamer": 1,
-            "game_type": 2
+            "game_type": 2,
+            "maker": "Steve Harvey",
+            "number_of_players": 3,
+            "skill_level": 4
         }
     },
     {
@@ -77,7 +101,10 @@
         "fields": {
             "name": "Star Wars: The Old Republic",
             "gamer": 1,
-            "game_type": 3
+            "game_type": 3,
+            "maker": "Steve Harvey",
+            "number_of_players": 10,
+            "skill_level": 4
         }
     }
 ]
