@@ -1,0 +1,101 @@
+[
+    {
+        "model": "levelupapi.event",
+        "pk": 1,
+        "fields": {
+            "description": "Event 1 Description",
+            "date": "2023-03-01",
+            "attendees": [],
+            "organizer": 1,
+            "game": 1
+        }
+    },
+    {
+        "model": "levelupapi.event",
+        "pk": 2,
+        "fields": {
+            "description": "Event 2 Description",
+            "date": "2023-03-02",
+            "attendees": [],
+            "organizer": 1,
+            "game": 2
+        }
+    },
+    {
+        "model": "levelupapi.event",
+        "pk": 3,
+        "fields": {
+            "description": "Event 3 Description",
+            "date": "2023-03-03",
+            "attendees": [],
+            "organizer": 1,
+            "game": 3
+        }
+    },
+    {
+        "model": "levelupapi.event",
+        "pk": 4,
+        "fields": {
+            "description": "Event 4 Description",
+            "date": "2023-03-04",
+            "attendees": [],
+            "organizer": 1,
+            "game": 4
+        }
+    },
+    {
+        "model": "levelupapi.event",
+        "pk": 5,
+        "fields": {
+            "description": "Event 5 Description",
+            "date": "2023-03-05",
+            "attendees": [],
+            "organizer": 1,
+            "game": 5
+        }
+    },
+    {
+        "model": "levelupapi.event",
+        "pk": 6,
+        "fields": {
+            "description": "Event 6 Description",
+            "date": "2023-03-06",
+            "attendees": [],
+            "organizer": 1,
+            "game": 6
+        }
+    },
+    {
+        "model": "levelupapi.event",
+        "pk": 7,
+        "fields": {
+            "description": "Event 7 Description",
+            "date": "2023-03-07",
+            "attendees": [],
+            "organizer": 1,
+            "game": 7
+        }
+    },
+    {
+        "model": "levelupapi.event",
+        "pk": 8,
+        "fields": {
+            "description": "Event 8 Description",
+            "date": "2023-03-08",
+            "attendees": [],
+            "organizer": 1,
+            "game": 8
+        }
+    },
+    {
+        "model": "levelupapi.event",
+        "pk": 9,
+        "fields": {
+            "description": "Event 9 Description",
+            "date": "2023-03-09",
+            "attendees": [],
+            "organizer": 1,
+            "game": 9
+        }
+    }
+]
