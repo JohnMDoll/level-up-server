@@ -63,10 +63,15 @@ class GameView(ViewSet):
         game.number_of_players = request.data["number_of_players"]
         game.skill_level = request.data["skill_level"]
 
-        game_type = GameType.objects.get(pk=request.data["game_type"])
+        game_type = GameType.objects.get(pk=request.data["game_type"]['id'])
         game.game_type = game_type
         game.save()
 
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
+
+    def destroy(self, request, pk):
+        game = Game.objects.get(pk=pk)
+        game.delete()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
