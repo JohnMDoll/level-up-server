@@ -1,10 +1,11 @@
 """View module for handling requests about game types"""
+from django.db.models import Q
 from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
-from levelupapi.models import Game, Gamer, GameType
-
+from django.db.models import Count
+from levelupapi.models import Game, Gamer, GameType, Event
 
 class GameView(ViewSet):
     """Level up games view"""
@@ -15,9 +16,12 @@ class GameView(ViewSet):
         Returns:
             Response -- JSON serialized game type
         """
-        game = Game.objects.get(pk=pk)
-        serializer = GameSerializer(game)
-        return Response(serializer.data)
+        try:
+            game = Game.objects.annotate(event_count=Count('game_events')).get(pk=pk)
+            serializer = GameSerializer(game)
+            return Response(serializer.data)
+        except Game.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
 
     def list(self, request):
@@ -26,8 +30,18 @@ class GameView(ViewSet):
         Returns:
             Response -- JSON serialized list of games
         """
-        game = Game.objects.all()
-        serializer = GameSerializer(game, many=True)
+        gamer = Gamer.objects.get(user=request.auth.user)
+        # games = Game.objects.all()
+        games = Game.objects.annotate(
+            event_count=Count('game_events'),
+            # user_event_count=Count(Q(Event.objects.all(organizer=gamer)))
+            )
+
+        game_type = request.query_params.get('type', None)
+        if game_type is not None:
+            games = games.filter(game_type_id=game_type)
+
+        serializer = GameSerializer(games, many=True)
         return Response(serializer.data)
 
     def create(self, request):
@@ -78,7 +92,10 @@ class GameView(ViewSet):
 class GameSerializer(serializers.ModelSerializer):
     """JSON serializer for game
     """
+    event_count = serializers.IntegerField(default=None)
+    user_event_count = serializers.IntegerField(default=None)
+
     class Meta:
         model = Game
-        fields = ('id', 'name', 'game_type', 'number_of_players', 'skill_level', 'maker')
+        fields = ('id', 'name', 'game_type', 'gamer', 'number_of_players', 'skill_level', 'maker', 'event_count', 'user_event_count')
         depth = 1

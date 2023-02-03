@@ -1,8 +1,10 @@
 """View module for handling requests about game types"""
+from django.db.models import Q
 from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
+from django.db.models import Count
 from levelupapi.models import Event, Game, Gamer
 from rest_framework.decorators import action
 
@@ -16,10 +18,14 @@ class EventView(ViewSet):
         Returns:
             Response -- JSON serialized event type
         """
-        event = Event.objects.get(pk=pk)
-        serializer = EventSerializer(event)
-        return Response(serializer.data)
+        try:
+            event = Event.objects.annotate(
+                attendees_count=Count('attendees')).get(pk=pk)
 
+            serializer = EventSerializer(event)
+            return Response(serializer.data)
+        except Event.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
     def list(self, request):
         """Handle GET requests to get all events
@@ -27,13 +33,20 @@ class EventView(ViewSet):
         Returns:
             Response -- JSON serialized list of events
         """
-
-        events = Event.objects.all()
         gamer = Gamer.objects.get(user=request.auth.user)
+        # events = Event.objects.all()
+        events = Event.objects.annotate(
+            attendees_count=Count('attendees'),
+            joined=Count(
+                'attendees',
+                filter=Q(attendees=gamer)
+            )
+        )
+        
         # Set the `joined` property on every event
-        for event in events:
-            # Check to see if the gamer is in the attendees list on the event
-            event.joined = gamer in event.attendees.all()
+        # for event in events:
+        #     # Check to see if the gamer is in the attendees list on the event
+        #     event.joined = gamer in event.attendees.all()
 
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data)
@@ -108,10 +121,14 @@ class EventView(ViewSet):
         event.attendees.remove(gamer)
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
+
 class EventSerializer(serializers.ModelSerializer):
     """JSON serializer for event
     """
+    attendees_count = serializers.IntegerField(default=None)
+
     class Meta:
         model = Event
-        fields = ('id', 'date', 'description', 'game', 'organizer', 'attendees', 'joined')
+        fields = ('id', 'date', 'description', 'game', 'organizer',
+                  'attendees', 'joined', 'attendees_count')
         depth = 2
