@@ -1,6 +1,5 @@
 """View module for handling requests about game types"""
 from django.db.models import Q
-from django.http import HttpResponseServerError
 from django.db.models import Count
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
