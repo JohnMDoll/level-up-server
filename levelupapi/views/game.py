@@ -1,5 +1,6 @@
 """View module for handling requests about game types"""
 from django.db.models import Q
+from django.core.exceptions import ValidationError
 from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
@@ -17,7 +18,10 @@ class GameView(ViewSet):
             Response -- JSON serialized game type
         """
         try:
-            game = Game.objects.annotate(event_count=Count('game_events')).get(pk=pk)
+            game = Game.objects.annotate(
+            event_count=Count('game_events'),
+            user_event_count=Count('game_events', filter=Q(game_events__organizer__user=request.user))
+            ).get(pk=pk)
             serializer = GameSerializer(game)
             return Response(serializer.data)
         except Game.DoesNotExist as ex:
@@ -30,12 +34,11 @@ class GameView(ViewSet):
         Returns:
             Response -- JSON serialized list of games
         """
-        gamer = Gamer.objects.get(user=request.auth.user)
-        # games = Game.objects.all()
         games = Game.objects.annotate(
             event_count=Count('game_events'),
-            # user_event_count=Count(Q(Event.objects.all(organizer=gamer)))
+            user_event_count=Count('game_events', filter=Q(game_events__organizer__user=request.user))
             )
+        print(games.query)
 
         game_type = request.query_params.get('type', None)
         if game_type is not None:
@@ -50,19 +53,27 @@ class GameView(ViewSet):
         Returns
             Response -- JSON serialized game instance
         """
-        gamer = Gamer.objects.get(user=request.auth.user)
-        game_type = GameType.objects.get(pk=request.data["game_type"])
+        # Pre- post validation function script except return
+        # gamer = Gamer.objects.get(user=request.auth.user)
+        # game_type = GameType.objects.get(pk=request.data["game_type"])
 
-        game = Game.objects.create(
-            name=request.data["name"],
-            maker=request.data["maker"],
-            number_of_players=request.data["number_of_players"],
-            skill_level=request.data["skill_level"],
-            gamer=gamer,
-            game_type=game_type
-        )
-        serializer = GameSerializer(game)
-        return Response(serializer.data)
+        # game = Game.objects.create(
+        #     name=request.data["name"],
+        #     maker=request.data["maker"],
+        #     number_of_players=request.data["number_of_players"],
+        #     skill_level=request.data["skill_level"],
+        #     gamer=gamer,
+        #     game_type=game_type
+        # )
+        # serializer = GameSerializer(game)
+
+        # new code to validate post requests, uses new CreateGameSerializer
+
+        gamer = Gamer.objects.get(user=request.auth.user)
+        serializer = CreateGameSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(gamer=gamer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, pk):
         """Handle PUT requests for a game
@@ -88,6 +99,10 @@ class GameView(ViewSet):
         game.delete()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
+class CreateGameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Game
+        fields = [ 'name', 'maker', 'number_of_players', 'skill_level', 'game_type']
 
 class GameSerializer(serializers.ModelSerializer):
     """JSON serializer for game
