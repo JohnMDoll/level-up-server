@@ -6,6 +6,7 @@ from django.views import View
 from levelupreports.views.helpers import dict_fetch_all
 from operator import itemgetter
 
+
 class UserGameList(View):
     def get(self, request):
         with connection.cursor() as db_cursor:
@@ -13,21 +14,17 @@ class UserGameList(View):
             # TODO: Write a query to get all games along with the gamer first name, last name, and id
             db_cursor.execute("""
                 SELECT
-                    g.id,
-                    g.name,
-                    g.maker,
-                    g.game_type_id,
-                    g.number_of_players,
-                    g.skill_level,
-                    g.gamer_id,
-                    u.id user_id,
-                    u.first_name || " " || u.last_name AS full_name
+                    id,
+                    name,
+                    maker,
+                    game_type_id,
+                    number_of_players,
+                    skill_level,
+                    gamer_id,
+                    user_id,
+                    full_name
                 FROM
-                    levelupapi_game g
-                JOIN
-                    levelupapi_gamer gmr ON g.gamer_id = gmr.id
-                JOIN
-                    auth_user u ON gmr.user_id = u.id
+                    GAMES_BY_USERs2
             """)
             # Pass the db_cursor to the dict_fetch_all function to turn the fetch_all() response into a dictionary
             dataset = dict_fetch_all(db_cursor)
@@ -64,7 +61,7 @@ class UserGameList(View):
             games_by_user = []
 
             for row in dataset:
-                # TODO: Create a dictionary called game that includes 
+                # TODO: Create a dictionary called game that includes
                 # the name, description, number_of_players, maker,
                 # game_type_id, and skill_level from the row dictionary
                 game = {
@@ -75,14 +72,13 @@ class UserGameList(View):
                     # 'number_of_players': row['number_of_players'],
                     # 'game_type_id': row['game_type_id']
                 }
-                
+
                 # See if the gamer has been added to the games_by_user list already
                 user_dict = None
                 for user_game in games_by_user:
                     if user_game['gamer_id'] == row['gamer_id']:
                         user_dict = user_game
-                
-                
+
                 if user_dict:
                     # If the user_dict is already in the games_by_user list, append the game to the games list
                     user_dict['games'].append(game)
@@ -93,15 +89,17 @@ class UserGameList(View):
                         "full_name": row['full_name'],
                         "games": [game]
                     })
-            #this orders the results from highest gamer id to lowest since reverse=True outside of x definition. Here to test ability to reorder list.
-            games_by_user = sorted(games_by_user, key=lambda x: x['gamer_id'], reverse=True)
+            # this orders the results from highest gamer id to lowest since reverse=True outside of x definition. Here to test ability to reorder list.
+            games_by_user = sorted(
+                games_by_user, key=lambda x: x['gamer_id'], reverse=True)
             # how to sort by games within list without a for loop?
             for user in games_by_user:
-                user['games'] = sorted(user['games'], key=lambda x: x['id'], reverse=True)
+                user['games'] = sorted(
+                    user['games'], key=lambda x: x['id'], reverse=True)
 
         # The template string must match the file name of the html template
         template = 'users/list_with_games.html'
-        
+
         # The context will be a dictionary that the template can access to show data
         context = {
             "usergame_list": games_by_user
